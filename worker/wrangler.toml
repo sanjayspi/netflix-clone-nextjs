@@ -1,0 +1,11 @@
+name = "ott-razorpay-worker"
+compatibility_date = "2025-09-01"
+type = "javascript"
+account_id = "<CF_ACCOUNT_ID>"
+
+[vars]
+FRONTEND_BASE = "https://your-pages.example"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ott_d1_db"

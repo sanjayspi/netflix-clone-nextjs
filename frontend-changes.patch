@@ -1,0 +1,136 @@
+*** Begin Patch
+*** Add File: public/data/clips.json
++[
++  {
++    "clip_id": "clip_001",
++    "title": "Free Clip — Surfing Cats",
++    "type": "FREE",
++    "price_cents": null,
++    "currency": "INR",
++    "poster_url": "/posters/clip_001.jpg",
++    "stream_id": "STREAM_ID_FREE_1"
++  },
++  {
++    "clip_id": "clip_002",
++    "title": "Paid Clip — Boss Level Trailer",
++    "type": "PAID",
++    "price_cents": 30000,
++    "currency": "INR",
++    "poster_url": "/posters/clip_002.jpg",
++    "stream_id": "STREAM_ID_PAID_1"
++  }
++]
++
+*** End Patch
+*** Begin Patch
+*** Add File: lib/player.js
++// lib/player.js
++import Hls from 'hls.js';
++
++export function playHls(url, videoEl) {
++  if (!videoEl) return console.warn('No video element passed to playHls');
++  if (Hls.isSupported()) {
++    const hls = new Hls();
++    hls.loadSource(url);
++    hls.attachMedia(videoEl);
++    hls.on(Hls.Events.MANIFEST_PARSED, () => videoEl.play().catch(()=>{}));
++    return hls;
++  } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
++    videoEl.src = url;
++    videoEl.play().catch(()=>{});
++    return null;
++  } else {
++    console.warn('HLS not supported in this browser');
++    return null;
++  }
++}
++
+*** End Patch
+*** Begin Patch
+*** Update File: components/MovieCard.jsx
+@@
+-import React from 'react';
+-
+-export default function MovieCard({ movie }) {
+-  return (
+-    <div className="card">
+-      <img src={movie.poster} alt={movie.title} />
+-      <div className="meta">
+-        <h3>{movie.title}</h3>
+-        <button>Play</button>
+-      </div>
+-    </div>
+-  );
+-}
++import React from 'react';
++import { playHls } from '../lib/player';
++
++// Note: adapt prop names if your template uses different props (movie vs clip)
++export default function MovieCard({ clip }) {
++  const handleClick = async () => {
++    try {
++      if (clip.type === 'FREE') {
++        const res = await fetch(`/api/get-free-url?clipId=${clip.clip_id}`);
++        if (!res.ok) throw new Error('Failed to get clip URL');
++        const { url } = await res.json();
++        if (window.openPlayerModal) {
++          window.openPlayerModal(url);
++        } else {
++          let v = document.getElementById('hidden-ott-player');
++          if (!v) {
++            v = document.createElement('video');
++            v.id = 'hidden-ott-player';
++            v.controls = true;
++            v.style.position = 'fixed';
++            v.style.bottom = '10px';
++            v.style.right = '10px';
++            v.style.width = '320px';
++            v.style.height = '180px';
++            document.body.appendChild(v);
++          }
++          playHls(url, v);
++        }
++      } else {
++        const res = await fetch('/api/create-payment', {
++          method: 'POST',
++          headers: { 'Content-Type': 'application/json' },
++          body: JSON.stringify({
++            clipId: clip.clip_id,
++            orderType: 'clip_purchase',
++            redirectUrl: 'https://gaming.example/landing',
++            callbackUrl: 'https://game.example.com/pay-callback'
++          })
++        });
++        const j = await res.json();
++        if (j.paymentUrl) {
++          window.location.href = j.paymentUrl;
++        } else {
++          alert('Payment initiation failed');
++          console.error(j);
++        }
++      }
++    } catch (e) {
++      console.error(e);
++      alert('Action failed (see console)');
++    }
++  };
++
++  return (
++    <div className="card">
++      <img src={clip.poster_url} alt={clip.title} className="rounded" />
++      <div className="meta">
++        <h3 className="text-sm font-semibold">{clip.title}</h3>
++        <div className="mt-2">
++          {clip.type === 'FREE' ? (
++            <button onClick={handleClick} className="px-3 py-1 bg-green-600 text-white rounded">Play</button>
++          ) : (
++            <button onClick={handleClick} className="px-3 py-1 bg-yellow-400 text-black rounded">
++              Buy ₹{(clip.price_cents/100).toFixed(2)}
++            </button>
++          )}
++        </div>
++      </div>
++    </div>
++  );
++}
+*** End Patch

@@ -1,0 +1,19 @@
+Files created:
+- worker/ (worker code, wrangler.toml, migrations, README)
+- worker.zip (zipped worker/)
+- frontend-changes.patch (git patch to apply to Next.js repo)
+- pages_functions/ (sample Pages Functions stubs)
+
+Download worker.zip and the patch files, then:
+1) Unzip worker.zip into your local project or a separate repo and run 'wrangler publish' after setting secrets.
+2) Apply frontend-changes.patch in your Next.js fork: git apply frontend-changes.patch
+3) Create a D1 database and run migrations/001_init.sql
+4) Set wrangler secrets:
+   wrangler secret put RAZORPAY_KEY_ID
+   wrangler secret put RAZORPAY_KEY_SECRET
+   wrangler secret put RAZORPAY_WEBHOOK_SECRET
+   wrangler secret put RS_PRIV_PEM
+   wrangler secret put FRONTEND_BASE
+5) Deploy Pages and the Worker. Configure Razorpay webhook to point to https://<your-worker>/payment/webhook
+
+If you want a full repo patch that merges worker/ into your Next.js repo, tell me and I'll generate a .patch combining all files.
