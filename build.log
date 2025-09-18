@@ -1,0 +1,45 @@
+﻿
+> netflix-clone-nextjs@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- info Linting and checking validity of types...
+- info Creating an optimized production build...
+npm : Browserslist: caniuse-lite is outdated. Please run:
+At line:1 char:1
++ npm run build 2>&1 | Out-File build.log -Encoding utf8
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Browserslist: c...ed. Please run::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+- info Compiled successfully
+- info Collecting page data...
+- info Generating static pages (0/3)
+- info Generating static pages (3/3)
+- info Finalizing page optimization...
+
+Route (pages)                              Size     First Load JS
+Γöî ╬╗ /                                      39.8 kB         204 kB
+Γö£   /_app                                  0 B             160 kB
+Γö£ Γùï /404                                   181 B           161 kB
+Γö£ ╬╗ /api/hello                             0 B             160 kB
+Γöö Γùï /login (958 ms)                        8.44 kB         173 kB
++ First Load JS shared by all              165 kB
+  Γö£ chunks/framework-7a7e500878b44665.js   45.2 kB
+  Γö£ chunks/main-92011a1a7f336a6f.js        28.5 kB
+  Γö£ chunks/pages/_app-5263b78d8e3ce16b.js  84.6 kB
+  Γö£ chunks/webpack-3427bfcb5f3d3e54.js     2.12 kB
+  Γöö css/007450c7ef30b52d.css               4.12 kB
+
+╬╗  (Server)  server-side renders at runtime (uses getInitialProps or getServerSideProps)
+Γùï  (Static)  automatically rendered as static HTML (uses no initial props)
+
